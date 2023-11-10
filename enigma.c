@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
   unsigned int seed = key;
   char result[strlen(text)];
-  for (int i = 0; i < strlen(text)-1; i++) {
+  for (int i = 0; i < strlen(text); i++) {
     unsigned char randByte = lcg(seed);
     result[i] = text[i] ^ randByte;
     seed = lcg(seed);
