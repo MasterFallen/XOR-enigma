@@ -55,20 +55,27 @@ int main(int argc, char *argv[]) {
   scanf("%d", &key);
 
   unsigned int seed = key;
-  char result[strlen(text)];
+  int textLength = strlen(text);
+  unsigned char result[strlen(text)];
   for (int i = 0; i < strlen(text); i++) {
+    if (text[i] == '\n') { // Avoid encrypting the end of input
+      result[i] = '\n';
+      continue;
+    }
     unsigned char randByte = lcg(seed);
     result[i] = text[i] ^ randByte;
+    printf("'%c' (%d) became '%c' (%d) (randByte = %d)\n", text[i], text[i], result[i], result[i], randByte);
     seed = lcg(seed);
   }
-  printf("Output: %s\n", result);
+  result[textLength] = '\0'; // Add null terminator
+  printf("Output: %s", result);
 
   /* Check wether we got a given file name. */
   char *filename = argc == 3 ? argv[2] : "data.bin";
 
   FILE *file = fopen(filename, "wb");
   if (file != NULL) {
-    fwrite(result, sizeof(char), strlen(result), file);
+    fwrite(result, sizeof(unsigned char), textLength, file);
     fclose(file);
     printf("Result saved to %s\n", filename);
   } else {
