@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
     result[i] = text[i] ^ randByte;
     seed = lcg(seed);
   }
+  printf("Output: %s\n", result);
 
   /* Check wether we got a given file name. */
   char *filename = argc == 3 ? argv[2] : "data.bin";
