@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   } else {
     /* Read text from user input */
     printf("Please enter the text: ");
-    scanf("%s", text);
+    fgets(text, sizeof(text), stdin);
   }
 
   printf("Please enter the key: ");
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
   unsigned int seed = key;
   char result[strlen(text)];
-  for (int i = 0; i < strlen(text); i++) {
+  for (int i = 0; i < strlen(text)-1; i++) {
     unsigned char randByte = lcg(seed);
     result[i] = text[i] ^ randByte;
     seed = lcg(seed);
