@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SEED 12 // or Start Value
-#define M 4967296 // Modulus
-#define A 3515245 // Multiplier
-#define C 12345 // Increment
+#define SEED 12       // or Start Value
+#define M 2147483648  // Modulus
+#define A 1103515245  // Multiplier
+#define C 12345       // Increment
 
 /* (C) N. de Boer & A. Janikowska, 2023 */
 
@@ -21,30 +21,34 @@ unsigned int sg(unsigned char X_n24, unsigned char X_n55, unsigned int m) {
   return abs(X_n24 - X_n55) % M;
 }
 
+void readFile(char *filename, char *text, int maxSize) {
+  FILE *file = fopen(filename, "rb");
+  if (file == NULL) {
+    printf("Failed to open the file.\n");
+    return;
+  }
+
+  fseek(file, 0, SEEK_END);
+  long fileSize = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  if (fileSize >= maxSize) {
+    printf("File size exceeds the maximum limit.\n");
+    fclose(file);
+    return;
+  }
+
+  fread(text, sizeof(char), fileSize, file);
+  fclose(file);
+}
+
 int main(int argc, char *argv[]) {
   char text[100];
   int key = 0;
 
   if (argc == 3 && strcmp(argv[1], "-f") == 0) {
     /* Read text from file */
-    FILE *file = fopen(argv[2], "rb");
-    if (file == NULL) {
-      printf("Failed to open the file.\n");
-      return 1;
-    }
-
-    fseek(file, 0, SEEK_END);
-    long fileSize = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    if (fileSize >= sizeof(text)) {
-      printf("File size exceeds the maximum limit.\n");
-      fclose(file);
-      return 1;
-    }
-
-    fread(text, sizeof(char), fileSize, file);
-    fclose(file);
+    readFile(argv[2], text, sizeof(text));
   } else {
     /* Read text from user input */
     printf("Please enter the text: ");
@@ -54,20 +58,37 @@ int main(int argc, char *argv[]) {
   printf("Please enter the key: ");
   scanf("%d", &key);
 
+  /* TODO: Prompt encryption method ? */
+  int encryptionMethod = 1;
+
   unsigned int seed = key;
   int textLength = strlen(text);
   unsigned char result[strlen(text)];
   for (int i = 0; i < strlen(text); i++) {
-    if (text[i] == '\n') { // Avoid encrypting the end of input
+    if (text[i] == '\n') {  // Avoid encrypting the end of input
       result[i] = '\n';
       continue;
     }
-    unsigned char randByte = lcg(seed);
+    /* Generate a byte based on different methods */
+    unsigned char randByte = 0;
+    switch (encryptionMethod) {
+      case 0:
+        /* Uses the rand() function */
+        break;
+      case 1:
+        randByte = lcg(seed);
+        seed = lcg(seed);
+        break;
+      case 2:
+        /* Uses the sg() function. sg has previously? been init w/ 55 PRGN */
+        break;
+      default:
+        break;
+    }
+
     result[i] = text[i] ^ randByte;
-    printf("'%c' (%d) became '%c' (%d) (randByte = %d)\n", text[i], text[i], result[i], result[i], randByte);
-    seed = lcg(seed);
   }
-  result[textLength] = '\0'; // Add null terminator
+  result[textLength] = '\0';
   printf("Output: %s", result);
 
   /* Check wether we got a given file name. */
