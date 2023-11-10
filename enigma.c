@@ -8,7 +8,6 @@
 
 /* (C) N. de Boer & A. Janikowska, 2023 */
 
-
 int abs(int x) {
   return x < 0 ? -x : x;
 }
