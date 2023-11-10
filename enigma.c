@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define SEED 12 // or Start Value
-#define M 94 // Modulus
-#define A 1103515245 // Multiplier
+#define M 4967296 // Modulus
+#define A 3515245 // Multiplier
 #define C 12345 // Increment
 
 /* (C) N. de Boer & A. Janikowska, 2023 */
@@ -21,36 +22,57 @@ unsigned int sg(unsigned char X_n24, unsigned char X_n55, unsigned int m) {
 }
 
 int main(int argc, char *argv[]) {
+  char text[100];
   int key = 0;
+
+  if (argc == 3 && strcmp(argv[1], "-f") == 0) {
+    /* Read text from file */
+    FILE *file = fopen(argv[2], "rb");
+    if (file == NULL) {
+      printf("Failed to open the file.\n");
+      return 1;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    if (fileSize >= sizeof(text)) {
+      printf("File size exceeds the maximum limit.\n");
+      fclose(file);
+      return 1;
+    }
+
+    fread(text, sizeof(char), fileSize, file);
+    fclose(file);
+  } else {
+    /* Read text from user input */
+    printf("Please enter the text: ");
+    scanf("%s", text);
+  }
+
   printf("Please enter the key: ");
   scanf("%d", &key);
-  char text[100];
-  printf("Please enter the text: ");
-  scanf("%s", text);
-  printf("Do you want to 'e'ncrypt or 'd'ecrypt ? ");
-  int isEncrypt;
-  scanf("%c", &isEncrypt-100); // 0 if e, 1 if d.
-  printf("Which PRNG ?\n1. rand()\n2. LCG()\n3.SG()");
-  int generatorIdx = 0;
-  scanf("%d", &generatorIdx);
 
-  /* Using the LCG algo */
   unsigned int seed = key;
   char result[strlen(text)];
-  for(int i = 0; i < strlen(text); i++) {
+  for (int i = 0; i < strlen(text); i++) {
     unsigned char randByte = lcg(seed);
-    result[i] = text[i] ^ (randByte+32);
+    result[i] = text[i] ^ randByte;
     seed = lcg(seed);
   }
-  printf("%s\n", result);
 
-  /* Reverting the encryption now */
-  seed = key; // Resetting
-  for(int i = 0; i < strlen(text); i++) {
-    unsigned char randByte = lcg(seed); // Get a random byte
-    result[i] = result[i] ^ (randByte+32); // do a XOR on the current char
-    seed = lcg(seed); // get the next random number
+  /* Check wether we got a given file name. */
+  char *filename = argc == 3 ? argv[2] : "data.bin";
+
+  FILE *file = fopen(filename, "wb");
+  if (file != NULL) {
+    fwrite(result, sizeof(char), strlen(result), file);
+    fclose(file);
+    printf("Result saved to %s\n", filename);
+  } else {
+    printf("Failed to open the file.\n");
   }
-  printf("%s\n", result);
+
   return 0;
 }
