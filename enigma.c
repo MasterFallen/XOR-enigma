@@ -105,6 +105,9 @@ int main(int argc, char *argv[]) {
     }
 
     result[i] = text[i] ^ randByte;  // XOR current char
+    if(text[i] == randByte) {
+      result[i] = text[i];
+    }
   }
   result[textLength] = '\0';
   printf("Output: '%s'\n", result);
