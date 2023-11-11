@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
     /* Read text from user input */
     printf("Please enter the text: ");
     fgets(text, sizeof(text), stdin);
+    text[strcspn(text, "\n")] = '\0';
   }
 
   int encryptionMethod = 2;
@@ -84,10 +85,6 @@ int main(int argc, char *argv[]) {
   unsigned char result[strlen(text)];
 
   for (int i = 0; i < strlen(text); i++) {
-    if (text[i] == '\n') {  // Avoid encrypting the end of input
-      result[i] = '\n';
-      continue;
-    }
     /* Generate a byte based on different methods */
     unsigned char randByte = 0;
     switch (encryptionMethod) {
@@ -110,7 +107,7 @@ int main(int argc, char *argv[]) {
     result[i] = text[i] ^ randByte;  // XOR current char
   }
   result[textLength] = '\0';
-  printf("Output: %s", result);
+  printf("Output: '%s'\n", result);
 
   /* Check wether we got a given file name. */
   char *filename = argc == 3 ? argv[2] : "data.bin";
