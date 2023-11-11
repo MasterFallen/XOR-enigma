@@ -9,17 +9,22 @@
 
 /* (C) N. de Boer & A. Janikowska, 2023 */
 
-int abs(int x) {
-   return x < 0 ? -x : x;
-}
 // unsigned int
 
 unsigned int lcg(int prevRandInt) {
    return (A * prevRandInt + C) % M;
 }
 
-unsigned int sg(unsigned char X_n24, unsigned char X_n55, unsigned int m) {
-   return abs(X_n24 - X_n55) % M;
+unsigned int sg(unsigned char *listOfNums) {
+   unsigned int randNum = (listOfNums[29] - listOfNums[0]) % M;
+   // Shift the array to the left
+   for (int i = 0; i < 54; i++) {
+      listOfNums[i] = listOfNums[i + 1];
+   }
+   // Store the new random number at the end of the array
+   listOfNums[54] = lcg(listOfNums[53]);
+   return randNum;
+
 }
 
 void readFile(char *filename, char *text, int maxSize) {
@@ -59,7 +64,7 @@ int main(int argc, char *argv[]) {
    printf("Please enter the key: ");
    scanf("%d", &key);
 
-   int encryptionMethod = 4;
+   int encryptionMethod = 2;
    printf("Please enter the desired encryption method: \n\n");
    printf("[1] OS Random number generator, \n");
    printf("[2] Linear congruential generator, \n");
@@ -67,6 +72,16 @@ int main(int argc, char *argv[]) {
    scanf("%d", &encryptionMethod);
 
    unsigned int seed = key;
+   
+   /* If using Substractive generator, initialize it */
+   unsigned char subtractive[55];
+   if (encryptionMethod == 3) {
+      for (int i = 0; i < 55; i++) {
+         subtractive[i] = lcg(seed);
+         seed = subtractive[i];
+      }
+   }
+
    int textLength = strlen(text);
    unsigned char result[strlen(text)];
 
@@ -81,13 +96,14 @@ int main(int argc, char *argv[]) {
          case 1:
             srand(seed);
             randByte = rand() % 256;
+            seed = randByte; // Update seed
             break;
          case 2:
             randByte = lcg(seed);
-            seed = lcg(seed);
+            seed = randByte; // Update seed
             break;
          case 3:
-            /* Uses the sg() function. sg has previously? been init w/ 55 PRGN */
+            randByte = sg(subtractive);
             break;
          default:
             break;
