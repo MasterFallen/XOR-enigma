@@ -105,8 +105,10 @@ int main(int argc, char *argv[]) {
     }
 
     result[i] = text[i] ^ randByte;  // XOR current char
-    if(text[i] == randByte) {
-      result[i] = text[i];
+    if(text[i] == randByte) { // Workaround the \0 char
+      result[i] = text[i] ^ (randByte + 1);
+    } else if(result[i] == randByte + 1) {
+      result[i] = text[i] ^ (randByte + 1);
     }
   }
   result[textLength] = '\0';
