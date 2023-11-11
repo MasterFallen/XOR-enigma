@@ -9,8 +9,6 @@
 
 /* (C) N. de Boer & A. Janikowska, 2023 */
 
-// unsigned int
-
 unsigned int lcg(int prevRandInt) {
    return (A * prevRandInt + C) % M;
 }
