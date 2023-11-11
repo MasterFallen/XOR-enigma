@@ -46,7 +46,7 @@ void readFile(char *filename, char *text, int maxSize) {
 }
 
 int main(int argc, char *argv[]) {
-  char text[100];
+  char text[100] = {0};
 
   if (argc == 3 && strcmp(argv[1], "-f") == 0) {
     /* Read text from file */
