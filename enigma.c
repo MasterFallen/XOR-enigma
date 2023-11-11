@@ -15,11 +15,11 @@ unsigned int lcg(int prevRandInt) {
 
 unsigned int sg(unsigned char listOfBytes[55]) {
   unsigned int randNum = (listOfBytes[29] - listOfBytes[0]) % M;
-  // Shift the array to the left
+  /* Shift the array to the left */
   for (int i = 0; i < 54; i++) {
     listOfBytes[i] = listOfBytes[i + 1];
   }
-  // Store the new random number at the end of the array
+  /* Store the new random number at the end of the array */
   listOfBytes[54] = lcg(listOfBytes[53]);
   return randNum;
 }
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
         break;
     }
 
-    result[i] = text[i] ^ randByte;  // XOR
+    result[i] = text[i] ^ randByte;  // XOR current char
   }
   result[textLength] = '\0';
   printf("Output: %s", result);
