@@ -13,14 +13,14 @@ unsigned int lcg(int prevRandInt) {
   return (A * prevRandInt + C) % M;
 }
 
-unsigned int sg(unsigned char *listOfNums) {
-  unsigned int randNum = (listOfNums[29] - listOfNums[0]) % M;
+unsigned int sg(unsigned char listOfBytes[55]) {
+  unsigned int randNum = (listOfBytes[29] - listOfBytes[0]) % M;
   // Shift the array to the left
   for (int i = 0; i < 54; i++) {
-    listOfNums[i] = listOfNums[i + 1];
+    listOfBytes[i] = listOfBytes[i + 1];
   }
   // Store the new random number at the end of the array
-  listOfNums[54] = lcg(listOfNums[53]);
+  listOfBytes[54] = lcg(listOfBytes[53]);
   return randNum;
 }
 
@@ -65,18 +65,16 @@ int main(int argc, char *argv[]) {
   scanf("%d", &encryptionMethod);
 
   unsigned char key;
+  unsigned char keyArray[55];
   if (encryptionMethod == 1 || encryptionMethod == 2) {
     printf("Please enter a 1-byte long key: ");
-    unsigned char key = 0;
     scanf(" %c", &key);
   } else if (encryptionMethod == 3) {
     printf("Please enter a 55-byte long key: ");
-    unsigned char key[56];
+    getchar();
     for (int i = 0; i < 55; i++) {
-      scanf(" %c", &key[i]);
+      keyArray[i] = getchar();
     }
-    printf("First byte: %c", key[0]);
-    printf("Last byte: %c", key[54]);
   } else {
     printf("Wrong encryption method. Exiting...");
     return 0;
@@ -103,7 +101,7 @@ int main(int argc, char *argv[]) {
         key = randByte;
         break;
       case 3:
-        randByte = sg(&key);
+        randByte = sg(keyArray);
         break;
       default:
         break;
