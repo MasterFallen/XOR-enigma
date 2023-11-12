@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SEED 12       // or Start Value
 #define M 2147483648  // Modulus
 #define A 1103515245  // Multiplier
 #define C 12345       // Increment
