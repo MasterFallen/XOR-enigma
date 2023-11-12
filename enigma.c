@@ -44,7 +44,7 @@ void readFile(char *filename, char *text, int maxSize) {
   fclose(file);
 }
 
-int checkEncryptionMethod(void){
+int getEncryptionMethod(void) {
   int encryptionMethod = 2;
   printf("Please enter the desired encryption method: \n\n");
   printf("[1] OS Random number generator, \n");
@@ -54,7 +54,7 @@ int checkEncryptionMethod(void){
   return encryptionMethod;
 }
 
-void saveToFile(char * filename, unsigned char * result, int textLength){
+void saveToFile(char *filename, unsigned char *result, int textLength) {
   FILE *file = fopen(filename, "wb");
   if (file != NULL) {
     fwrite(result, sizeof(unsigned char), textLength, file);
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     text[strcspn(text, "\n")] = '\0';
   }
 
-  int encryptionMethod = checkEncryptionMethod();
+  int encryptionMethod = getEncryptionMethod();
 
   unsigned char key;
   unsigned char keyArray[55];
@@ -120,9 +120,9 @@ int main(int argc, char *argv[]) {
     }
 
     result[i] = text[i] ^ randByte;  // XOR current char
-    if(text[i] == randByte) { // Workaround the \0 char
+    if (text[i] == randByte) {       // Workaround the \0 char
       result[i] = text[i] ^ (randByte + 1);
-    } else if(result[i] == randByte + 1) {
+    } else if (result[i] == randByte + 1) {
       result[i] = text[i] ^ (randByte + 1);
     }
   }
