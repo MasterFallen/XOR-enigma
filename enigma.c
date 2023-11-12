@@ -44,6 +44,27 @@ void readFile(char *filename, char *text, int maxSize) {
   fclose(file);
 }
 
+int checkEncryptionMethod(void){
+  int encryptionMethod = 2;
+  printf("Please enter the desired encryption method: \n\n");
+  printf("[1] OS Random number generator, \n");
+  printf("[2] Linear congruential generator, \n");
+  printf("[3] Subtractive generator, \n");
+  scanf("%d", &encryptionMethod);
+  return encryptionMethod;
+}
+
+void saveToFile(char * filename, unsigned char * result, int textLength){
+  FILE *file = fopen(filename, "wb");
+  if (file != NULL) {
+    fwrite(result, sizeof(unsigned char), textLength, file);
+    fclose(file);
+    printf("Result saved to %s\n", filename);
+  } else {
+    printf("Failed to open the file.\n");
+  }
+}
+
 int main(int argc, char *argv[]) {
   char text[1000] = {0};
 
@@ -57,12 +78,7 @@ int main(int argc, char *argv[]) {
     text[strcspn(text, "\n")] = '\0';
   }
 
-  int encryptionMethod = 2;
-  printf("Please enter the desired encryption method: \n\n");
-  printf("[1] OS Random number generator, \n");
-  printf("[2] Linear congruential generator, \n");
-  printf("[3] Subtractive generator, \n");
-  scanf("%d", &encryptionMethod);
+  int encryptionMethod = checkEncryptionMethod();
 
   unsigned char key;
   unsigned char keyArray[55];
@@ -115,15 +131,7 @@ int main(int argc, char *argv[]) {
 
   /* Check wether we got a given file name. */
   char *filename = argc == 3 ? argv[2] : "data.bin";
-
-  FILE *file = fopen(filename, "wb");
-  if (file != NULL) {
-    fwrite(result, sizeof(unsigned char), textLength, file);
-    fclose(file);
-    printf("Result saved to %s\n", filename);
-  } else {
-    printf("Failed to open the file.\n");
-  }
+  saveToFile(filename, result, textLength);
 
   return 0;
 }
